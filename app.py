@@ -14,6 +14,7 @@ def index():
     data = program.get_tv_broadcasts(today, "daserste")
 
     tagesthemen = {}
+    when = "Entweder kommen heute keine Tagesthemen oder es gab einen Fehler beim Abruf der Programmdaten."
     for i in data:
         if i["title"] == "Tagesthemen":
             tagesthemen = i

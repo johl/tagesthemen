@@ -25,22 +25,33 @@ def keys_exist(element, *keys):
 
 @app.route("/")
 def index():
-    tz = pytz.timezone('Europe/Berlin')
-    today = str(datetime.now(tz).strftime('%Y-%m-%d'))
-    program = ARDProgram()
-    data = program.get_tv_broadcasts(today, "daserste")
     tagesthemen = {}
     when = "Entweder kommen heute keine Tagesthemen oder es gab einen Fehler beim Abruf der Programmdaten."
     who = []
-    
-    for i in data:
-        if i["title"] == "Tagesthemen":
-            tagesthemen = i
+    data = []
+    tz = pytz.timezone('Europe/Berlin')
+    today = str(datetime.now(tz).strftime('%Y-%m-%d'))
+    try:
+        program = ARDProgram()
+        data = program.get_tv_broadcasts(today, "daserste")
+    except:
+        pass
+       
+    if data != []:
+        for i in data:
+            if i["title"] == "Tagesthemen":
+                tagesthemen = i
 
     if tagesthemen != {}:
         s = tagesthemen["begin"]
         dt = datetime.fromisoformat(s)
-        when = "Die Tagesthemen kommen heute um " + str(dt.hour) + ":" + str(dt.minute) +" Uhr im Ersten." 
+        hour = str(dt.hour)
+        minute = str(dt.minute)
+        if hour == "0":
+            hour = "00"
+        if minute == "0":
+            minute = "00"
+        when = "Die Tagesthemen kommen heute um " + hour + ":" + minute +" Uhr im Ersten." 
 
     if keys_exist(tagesthemen, "production", "participants"):
         for tt in tagesthemen["production"]["participants"]:
